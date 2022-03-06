@@ -1,23 +1,43 @@
 import logo from './logo.svg';
 import './App.css';
 
+import { DataStore } from '@aws-amplify/datastore';
+import { Todo } from './models';
+import { useEffect, useState } from 'react';
+
+
+
 function App() {
+  const [todos, setTodos] = useState([])
+
+  useEffect(() => {
+    const onLoadTodos = async () => {
+      const models = await DataStore.query(Todo);
+      setTodos(models)
+      console.log(models);
+    }
+    onLoadTodos()
+
+  }, [])
+
+
+  const onCreateTodo = async () => {
+    console.log('todo')
+    await DataStore.save(
+      new Todo({
+        "name": "do it",
+        "description": "do it"
+      })
+    );
+  }
+
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      <h1>hello world</h1>
+      {todos.map(todo => (
+        <li key={todo.id}>{todo.name}</li>
+      ))}
+      <button onClick={onCreateTodo}>click here!</button>
     </div>
   );
 }
